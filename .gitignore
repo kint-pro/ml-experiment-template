@@ -7,6 +7,9 @@ build/
 
 results/metrics.parquet
 results/summary.json
+results/statistics.json
+results/report.md
+results/report.json
 results/figures/
 results/models/
 results/config_used.json

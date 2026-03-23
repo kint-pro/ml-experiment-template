@@ -1,4 +1,4 @@
-from src.config import ExperimentConfig, SeedConfig, load_config
+from ml_experiment_stats.config import ExperimentConfig, SeedConfig, load_config
 
 
 def test_default_config():

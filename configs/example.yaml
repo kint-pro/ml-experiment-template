@@ -1,34 +1,34 @@
 experiment:
-  name: "EXPERIMENT_NAME"
-  description: "EXPERIMENT_DESCRIPTION"
+  name: "Regression Example"
+  description: "Linear vs Ridge vs Lasso on synthetic data"
   version: "0.1.0"
 
 seed:
   base: 42
-  n_runs: 10
+  n_runs: 20
 
 data:
-  n_train: 1000
-  n_val: 200
-  n_test: 200
+  n_train: 200
+  n_val: 50
+  n_test: 50
 
 model:
-  hidden_layers: [64, 64]
-  activation: "relu"
+  hidden_layers: []
+  activation: "none"
   dropout: 0.0
 
 training:
-  epochs: 100
-  learning_rate: 0.001
+  epochs: 1
+  learning_rate: 0.01
   batch_size: 64
   optimizer: "adam"
-  early_stopping_patience: 10
+  early_stopping_patience: 0
 
 output:
   results_dir: "results"
   figures_dir: "results/figures"
-  save_models: true
-  figure_format: ["png", "pdf"]
+  save_models: false
+  figure_format: ["png"]
 
 statistics:
   alpha: 0.05

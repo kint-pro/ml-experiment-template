@@ -1,46 +1,55 @@
-# EXPERIMENT_NAME
+# ML Experiment Template
 
-ONE_SENTENCE_DESCRIPTION.
+Statistical analysis engine for ML experiments with multi-seed evaluation.
 
 ## Quick Start
 
 ```bash
-git clone REPO_URL
-cd EXPERIMENT_NAME
-uv sync
-make run
+make setup
+make example
 ```
 
 Results appear in `results/`. Figures in `results/figures/`.
-
-## Background
-
-WHY_THIS_EXPERIMENT_EXISTS. WHAT_QUESTION_IT_ANSWERS. 2-4 SENTENCES.
-
-See [experiment.md](experiment.md) for the full experiment design, metrics, and comparison framework.
 
 ## Installation
 
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-make setup
+make setup          # all dependencies (plots, parquet, bayesian)
 ```
 
-This installs all dependencies including dev tools (ruff, pytest).
+Install only what you need:
+
+```bash
+pip install kint-stats              # core: numpy, scipy, pyyaml
+pip install kint-stats[parquet]     # + pyarrow
+pip install kint-stats[plots]       # + matplotlib
+pip install kint-stats[bayesian]    # + baycomp
+pip install kint-stats[all]         # everything
+```
 
 ## Usage
 
-### Run the experiment
+### Implement your experiment
+
+Edit `experiment/run.py` — implement `run_single()`. See `experiment/example.py` for a working demo.
+
+### Run
 
 ```bash
-make run
+make run                                    # run experiment
+make run CONFIG=configs/custom.yaml         # custom config
+make run BASELINE_DIR=results_baseline/     # with diff vs baseline
 ```
 
-With a custom config:
+### CLI
 
 ```bash
-make run CONFIG=configs/custom.yaml
+mlstats summary                             # print results to console
+mlstats report                              # generate report.md + report.json
+mlstats diff results/ results_baseline/     # compare two result dirs
+mlstats check --config configs/default.yaml # CI threshold check
 ```
 
 ### Generate figures from results
@@ -49,97 +58,54 @@ make run CONFIG=configs/custom.yaml
 make results
 ```
 
-### Run tests
-
-```bash
-make test
-```
-
-### Lint
-
-```bash
-make lint
-```
-
 ## Configuration
 
 All parameters are defined in YAML files under `configs/`.
 
-```yaml
-experiment:
-  name: "EXPERIMENT_NAME"
-
-seed:
-  base: 42
-  n_runs: 10       # independent runs for statistical validity
-
-data:
-  n_train: 1000
-  n_val: 200
-  n_test: 200
-
-training:
-  epochs: 100
-  learning_rate: 0.001
-  batch_size: 64
-```
-
-See [configs/default.yaml](configs/default.yaml) for all options.
+See [configs/default.yaml](configs/default.yaml) for all options including `statistics` (test type, alpha, correction, ROPE) and `ci` (threshold gating).
 
 ## Project Structure
 
 ```
-├── configs/
-│   └── default.yaml        Experiment configuration
-├── src/
-│   ├── config.py            Config loading and validation
-│   ├── seed.py              Deterministic seed management
-│   ├── results.py           Results collection (Parquet + JSON)
-│   ├── run.py               Experiment entry point
-│   └── visualize.py         Plot generation
-├── tests/                   Unit tests
-├── data/                    Generated or downloaded data
-├── results/
-│   ├── figures/             Generated plots (PNG + PDF)
-│   ├── metrics.parquet      Per-run metrics
-│   └── summary.json         Aggregated results (mean, std, min, max)
-├── experiment.md            Experiment design document
-├── Makefile                 Common commands
-└── pyproject.toml           Dependencies (uv-managed)
+kint_stats/             Installable package (pip install kint-stats)
+├── statistics.py       Wilcoxon, t-test, Friedman, Nemenyi, Bayesian, Power
+├── report.py           Console + Markdown + JSON renderers
+├── diff.py             Baseline comparison
+├── ci.py               CI threshold gating
+├── results.py          RunResult, ResultsCollector
+├── visualize.py        Plots (optional: matplotlib)
+├── seed.py             Deterministic seeding (Python, NumPy)
+├── config.py           Configuration dataclasses
+├── cli.py              mlstats CLI
+└── cli_run.py          Experiment orchestration
+
+experiment/             Template (you modify this)
+├── run.py              run_single() — implement this
+└── example.py          Working demo (Linear vs Ridge vs Lasso)
+
+configs/                Experiment configs (YAML)
+tests/                  131 tests
+results/                Output (generated)
 ```
 
 ## Reproducibility
 
-- All random seeds are fixed via config and applied to Python, NumPy, and PyTorch
+- All random seeds are fixed via config and applied to Python and NumPy
 - Each experiment runs N independent seeds (default: 10) with paired comparison
 - The exact config used for each run is saved to `results/config_used.json`
 - Results are stored as Parquet (metrics) and JSON (summary statistics)
 - Dependencies are pinned in `uv.lock`
 
-To reproduce published results:
+## Statistical Methods
 
-```bash
-uv sync
-make run CONFIG=configs/default.yaml
-```
-
-## Results
-
-DESCRIBE_OR_LINK_TO_RESULTS_AFTER_RUNNING.
-
-Summary statistics are in `results/summary.json`. Per-run metrics in `results/metrics.parquet`.
-
-## Citation
-
-```bibtex
-@software{EXPERIMENT_NAME,
-  author       = {kint},
-  title        = {EXPERIMENT_TITLE},
-  year         = {2026},
-  url          = {REPO_URL},
-  license      = {Apache-2.0}
-}
-```
+- **Pairwise**: Wilcoxon signed-rank, paired t-test, auto (Shapiro-Wilk selection)
+- **Omnibus**: Friedman test, Nemenyi post-hoc with Critical Difference diagrams
+- **Bayesian**: Signed-rank test with ROPE (Region of Practical Equivalence)
+- **Effect sizes**: Cliff's delta (non-parametric), Cohen's d (parametric)
+- **Corrections**: Holm-Bonferroni, Bonferroni
+- **Confidence intervals**: BCa bootstrap
+- **Power analysis**: Post-hoc power with recommended sample size
+- **Multi-dataset**: Cross-dataset Friedman analysis (Demsar 2006)
 
 ## License
 

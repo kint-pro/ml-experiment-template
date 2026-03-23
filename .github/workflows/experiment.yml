@@ -1,0 +1,47 @@
+name: Experiment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - run: uv sync --group dev
+
+      - run: make lint
+
+      - run: make test
+
+  experiment:
+    if: github.event_name == 'workflow_dispatch'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - run: uv sync
+
+      - run: make run
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: experiment-results
+          path: results/

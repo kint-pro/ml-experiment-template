@@ -6,13 +6,10 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
 dependencies = [
-    "numpy>=1.24",
-    "matplotlib>=3.7",
-    "pyarrow>=15.0",
-    "pyyaml>=6.0",
+    "ml-experiment-stats[all] @ git+https://github.com/kint-pro/ml-experiment-stats.git",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ruff>=0.4",
     "pytest>=8.0",
