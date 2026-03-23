@@ -1,6 +1,6 @@
 # ML Experiment Template
 
-Statistical analysis engine for ML experiments with multi-seed evaluation.
+Reusable template for ML experiments with statistical significance analysis.
 
 ## Quick Start
 
@@ -16,17 +16,7 @@ Results appear in `results/`. Figures in `results/figures/`.
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-make setup          # all dependencies (plots, parquet, bayesian)
-```
-
-Install only what you need:
-
-```bash
-pip install kint-stats              # core: numpy, scipy, pyyaml
-pip install kint-stats[parquet]     # + pyarrow
-pip install kint-stats[plots]       # + matplotlib
-pip install kint-stats[bayesian]    # + baycomp
-pip install kint-stats[all]         # everything
+make setup
 ```
 
 ## Usage
@@ -43,7 +33,7 @@ make run CONFIG=configs/custom.yaml         # custom config
 make run BASELINE_DIR=results_baseline/     # with diff vs baseline
 ```
 
-### CLI
+### CLI (from ml-experiment-stats)
 
 ```bash
 mlstats summary                             # print results to console
@@ -67,26 +57,16 @@ See [configs/default.yaml](configs/default.yaml) for all options including `stat
 ## Project Structure
 
 ```
-kint_stats/             Installable package (pip install kint-stats)
-├── statistics.py       Wilcoxon, t-test, Friedman, Nemenyi, Bayesian, Power
-├── report.py           Console + Markdown + JSON renderers
-├── diff.py             Baseline comparison
-├── ci.py               CI threshold gating
-├── results.py          RunResult, ResultsCollector
-├── visualize.py        Plots (optional: matplotlib)
-├── seed.py             Deterministic seeding (Python, NumPy)
-├── config.py           Configuration dataclasses
-├── cli.py              mlstats CLI
-└── cli_run.py          Experiment orchestration
-
-experiment/             Template (you modify this)
+experiment/             Your code (modify this)
 ├── run.py              run_single() — implement this
 └── example.py          Working demo (Linear vs Ridge vs Lasso)
 
 configs/                Experiment configs (YAML)
-tests/                  131 tests
+tests/                  Template tests
 results/                Output (generated)
 ```
+
+Statistical engine provided by [ml-experiment-stats](https://github.com/kint-pro/ml-experiment-stats).
 
 ## Reproducibility
 
@@ -95,17 +75,6 @@ results/                Output (generated)
 - The exact config used for each run is saved to `results/config_used.json`
 - Results are stored as Parquet (metrics) and JSON (summary statistics)
 - Dependencies are pinned in `uv.lock`
-
-## Statistical Methods
-
-- **Pairwise**: Wilcoxon signed-rank, paired t-test, auto (Shapiro-Wilk selection)
-- **Omnibus**: Friedman test, Nemenyi post-hoc with Critical Difference diagrams
-- **Bayesian**: Signed-rank test with ROPE (Region of Practical Equivalence)
-- **Effect sizes**: Cliff's delta (non-parametric), Cohen's d (parametric)
-- **Corrections**: Holm-Bonferroni, Bonferroni
-- **Confidence intervals**: BCa bootstrap
-- **Power analysis**: Post-hoc power with recommended sample size
-- **Multi-dataset**: Cross-dataset Friedman analysis (Demsar 2006)
 
 ## License
 
