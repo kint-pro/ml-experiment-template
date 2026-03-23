@@ -13,7 +13,36 @@ results/config_used.json
 
 data/*.csv
 data/*.npy
+data/*.npz
 data/*.pt
+data/*.pth
+data/*.parquet
+data/*.h5
+data/*.hdf5
+
+*.parquet
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+*.h5
+*.hdf5
+*.safetensors
+
+*.zip
+*.tar.gz
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mov
 
 .ruff_cache/
 .pytest_cache/
