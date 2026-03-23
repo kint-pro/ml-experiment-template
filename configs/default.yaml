@@ -1,0 +1,31 @@
+experiment:
+  name: "EXPERIMENT_NAME"
+  description: "EXPERIMENT_DESCRIPTION"
+  version: "0.1.0"
+
+seed:
+  base: 42
+  n_runs: 10
+
+data:
+  n_train: 1000
+  n_val: 200
+  n_test: 200
+
+model:
+  hidden_layers: [64, 64]
+  activation: "relu"
+  dropout: 0.0
+
+training:
+  epochs: 100
+  learning_rate: 0.001
+  batch_size: 64
+  optimizer: "adam"
+  early_stopping_patience: 10
+
+output:
+  results_dir: "results"
+  figures_dir: "results/figures"
+  save_models: true
+  figure_format: ["png", "pdf"]
